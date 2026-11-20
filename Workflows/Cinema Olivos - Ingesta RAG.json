@@ -1,0 +1,172 @@
+{
+  "name": "Cinema Olivos - Ingesta RAG",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1_6lJ7SGTIdmpTPoTK8FxK0h32Z5wp7XhS1Pnn2CjoX8",
+          "mode": "list",
+          "cachedResultName": "Base de conocimiento - Cinema Olivos",
+          "cachedResultUrl": "https://docs.google.com/document/d/1_6lJ7SGTIdmpTPoTK8FxK0h32Z5wp7XhS1Pnn2CjoX8/edit?usp=drivesdk"
+        },
+        "options": {
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "text/plain"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        160,
+        0
+      ],
+      "id": "c41ebc05-714c-4f29-9e7c-42b1a96df65b",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "BJNjV4czRMKintzA",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "cb80bd77-8015-48c0-b952-ca92e695f754",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.4,
+      "position": [
+        336,
+        0
+      ],
+      "id": "98e785fc-1a35-4ce9-ad9a-594b9658dd42",
+      "name": "Supabase Vector Store",
+      "credentials": {
+        "supabaseApi": {
+          "id": "ZUERmpZwNIXfC9cy",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "loader": "textLoader",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        480,
+        192
+      ],
+      "id": "329881b2-bb4e-407c-b49e-553cde381c16",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "options": {
+          "dimensions": 512
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        384,
+        208
+      ],
+      "id": "5997cc08-dece-4c77-a9f4-93e40d2d7565",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "4627c12b-c26a-4b9e-b6c1-e8d7723cfbf2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0847d790af02dcece339fa9e9bf110fa6aff5c471d19337a2f2f32dc40666126"
+  },
+  "nodeGroups": [],
+  "id": "E2iJWD4cIwVIKcba",
+  "tags": []
+}
